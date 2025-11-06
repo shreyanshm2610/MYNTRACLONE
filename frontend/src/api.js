@@ -1,65 +1,126 @@
+// frontend/src/api.js
 import axios from "axios";
 
-const API_BASE = "http://localhost:5000/api";
+// 🔥 Auto-detect environment, with a safe hard-coded fallback for Render
+const API_BASE =
+  process.env.REACT_APP_API_BASE ||
+  (process.env.NODE_ENV === "production"
+    ? "https://myntraclone-43k4.onrender.com/api"
+    : "http://localhost:5000/api");
 
-// ---------- AUTH ----------
-export const login = (email, password) =>
-  axios.post(`${API_BASE}/auth/login`, { email, password });
-
-export const register = (name, email, password) =>
-  axios.post(`${API_BASE}/auth/register`, { name, email, password });
-
-// ---------- PRODUCTS ----------
-export const getProducts = () => axios.get(`${API_BASE}/products`);
-export const getProduct = (id) => axios.get(`${API_BASE}/products/${id}`);
-
-// ---------- CART ----------
-export const getCart = async () => {
-  const token = localStorage.getItem("myntra_token");
-  return axios.get(`${API_BASE}/cart`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+// ---------- Product APIs ----------
+export const getProducts = async () => {
+  try {
+    return await axios.get(`${API_BASE}/products`);
+  } catch (err) {
+    console.error("❌ getProducts error:", err);
+    throw err;
+  }
 };
 
-export const addToCart = async (id) => {
-  const token = localStorage.getItem("myntra_token");
-  return axios.post(
-    `${API_BASE}/cart/${id}`,
-    {},
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+export const getProduct = async (id) => {
+  try {
+    return await axios.get(`${API_BASE}/products/${id}`);
+  } catch (err) {
+    console.error("❌ getProduct error:", err);
+    throw err;
+  }
 };
 
-export const removeFromCart = async (id) => {
-  const token = localStorage.getItem("myntra_token");
-  return axios.delete(`${API_BASE}/cart/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+// ---------- Auth APIs ----------
+export const register = async (name, email, password) => {
+  try {
+    const res = await axios.post(`${API_BASE}/auth/register`, {
+      name,
+      email,
+      password,
+    });
+    return res.data;
+  } catch (err) {
+    console.error("❌ register error:", err);
+    throw err;
+  }
 };
 
-export const updateCartQuantity = async (id, quantity) => {
-  const token = localStorage.getItem("myntra_token");
-  return axios.put(
-    `${API_BASE}/cart/${id}`,
-    { quantity },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+export const login = async (email, password) => {
+  try {
+    const res = await axios.post(`${API_BASE}/auth/login`, {
+      email,
+      password,
+    });
+    return res.data;
+  } catch (err) {
+    console.error("❌ login error:", err);
+    throw err;
+  }
 };
 
-
-// ---------- WISHLIST ----------
+// ---------- Wishlist APIs ----------
 export const getWishlist = async () => {
-  const token = localStorage.getItem("myntra_token");
-  return axios.get(`${API_BASE}/wishlist`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  try {
+    const token = localStorage.getItem("myntra_token");
+    return await axios.get(`${API_BASE}/wishlist`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (err) {
+    console.error("❌ getWishlist error:", err);
+    throw err;
+  }
 };
 
-export const toggleWishlist = async (id) => {
-  const token = localStorage.getItem("myntra_token");
-  return axios.post(
-    `${API_BASE}/wishlist/toggle/${id}`,
-    {},
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+export const toggleWishlist = async (productId) => {
+  try {
+    const token = localStorage.getItem("myntra_token");
+    return await axios.post(
+      `${API_BASE}/wishlist/toggle/${productId}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+  } catch (err) {
+    console.error("❌ toggleWishlist error:", err);
+    throw err;
+  }
+};
+
+// ---------- Cart APIs ----------
+export const getCart = async () => {
+  try {
+    const token = localStorage.getItem("myntra_token");
+    return await axios.get(`${API_BASE}/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (err) {
+    console.error("❌ getCart error:", err);
+    throw err;
+  }
+};
+
+export const addToCart = async (productId) => {
+  try {
+    const token = localStorage.getItem("myntra_token");
+    return await axios.post(
+      `${API_BASE}/cart/${productId}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+  } catch (err) {
+    console.error("❌ addToCart error:", err);
+    throw err;
+  }
+};
+
+export const removeFromCart = async (productId) => {
+  try {
+    const token = localStorage.getItem("myntra_token");
+    return await axios.delete(`${API_BASE}/cart/${productId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (err) {
+    console.error("❌ removeFromCart error:", err);
+    throw err;
+  }
 };
