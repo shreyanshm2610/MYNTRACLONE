@@ -124,3 +124,27 @@ export const removeFromCart = async (productId) => {
     throw err;
   }
 };
+
+// ---------- Update cart item quantity (NEW) ----------
+/**
+ * updateCartQuantity(productId, quantity)
+ * - productId: id of product / cart item
+ * - quantity: new desired quantity (number)
+ *
+ * Expects backend route: PUT /api/cart/:id  with body { quantity: number }
+ */
+export const updateCartQuantity = async (productId, quantity) => {
+  try {
+    const token = localStorage.getItem("myntra_token");
+    return await axios.put(
+      `${API_BASE}/cart/${productId}`,
+      { quantity },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+  } catch (err) {
+    console.error("❌ updateCartQuantity error:", err);
+    throw err;
+  }
+};
